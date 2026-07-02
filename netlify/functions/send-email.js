@@ -12,10 +12,21 @@ exports.handler = async function(event, context) {
   }
 
   // Parse URL‑encoded form data
-  const params = new URLSearchParams(event.body);
-  const name = params.get('name') || '';
-  const email = params.get('email') || '';
-  const message = params.get('message') || '';
+  const contentType = event.headers['content-type'] || '';
+  let name = '';
+  let email = '';
+  let message = '';
+  if (contentType.includes('application/json')) {
+    const data = JSON.parse(event.body);
+    name = data.name || '';
+    email = data.email || '';
+    message = data.message || '';
+  } else {
+    const params = new URLSearchParams(event.body);
+    name = params.get('name') || '';
+    email = params.get('email') || '';
+    message = params.get('message') || '';
+  }
 
   const gmailUser = process.env.GMAIL_USER;
   const gmailPass = process.env.GMAIL_PASS;

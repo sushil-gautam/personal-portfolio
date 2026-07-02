@@ -63,9 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch(contactForm.action, {
                 method: "POST",
-                body: formData,
+                body: new URLSearchParams(formData),
                 headers: {
-                    'Accept': 'application/json'
+                    "Accept": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded"
                 }
             })
             .then(response => {
