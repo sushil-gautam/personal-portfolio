@@ -18,7 +18,7 @@ exports.handler = async function(event, context) {
   const message = params.get('message') || '';
 
   const gmailUser = process.env.GMAIL_USER;
-  const gmailPass = process.env.GMAIL_APP_PASSWORD;
+  const gmailPass = process.env.GMAIL_PASS;
 
   if (!gmailUser || !gmailPass) {
     return {
