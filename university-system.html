@@ -280,25 +280,34 @@ for choice, payload in menu_actions:
                         pyodide.FS.writeFile("main.py", sysMain.trim());
 
                         statusIndicator.textContent = "Status: Executing main.py module...";
-                        
-                        printToConsole("> Executing your 'University System' framework...");
-                        
+                        let pythonConsoleOutput = "";
+                        pyodide.setStdout({
+                            batched: (text) => {
+                                pythonConsoleOutput += text;
+                            }
+                        });
+                        pyodide.setStderr({
+                            batched: (text) => {
+                                pythonConsoleOutput += text;
+                            }
+                        });
+                         
                         // Execute the pure user main.py module
                         await pyodide.runPythonAsync("import main");
-                        
-                        printToConsole(">> main.py executed cleanly with 0 errors!");
-                        printToConsole(">> Output object generated...");
-                        printToConsole("\n> Locating generated students.csv file in Virtual Memory...");
+
+                        printToConsole("> University System Menu Interface");
+                        printToConsole("=========================================");
+                        printToConsole(pythonConsoleOutput.trim());
+                        printToConsole("=========================================");
 
                         // Display the generated CSV results
                         let csvData = pyodide.FS.readFile("students.csv", { encoding: "utf8" });
-                        
-                        printToConsole(">> File located! Outputting contents:\n");
-                        printToConsole("=========================================");
+                        printToConsole("\n> Generated students.csv");
+                        printToConsole("-----------------------------------------");
                         printToConsole(csvData);
-                        printToConsole("=========================================");
-                        printToConsole("\nStatus: Architecture Run Complete.");
-                        
+                        printToConsole("-----------------------------------------");
+                        printToConsole("\nStatus: Menu-driven run complete.");
+                         
                         statusIndicator.textContent = "Online. Execution Successful.";
                         statusIndicator.style.color = "#27c93f";
 
