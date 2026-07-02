@@ -170,47 +170,87 @@ class University_System:
             <script type="text/python" id="main.py">
 #Sushil Gautam
 #Student ID: 11844192
-
+ 
 #import university_system, student, faculty, and course
 from university_system import University_System
 from student import Student
 from faculty import Faculty
 from course import Course
+ 
+def show_menu():
+  print("1. Add Student")
+  print("2. Add Course")
+  print("3. Add Faculty")
+  print("4. Enroll Student in Course")
+  print("5. Assign Course to Faculty")
+  print("6. Save and Exit")
 
-#Add students
-S_Sushil = Student("Sushil","Gautam")
-S_Dhan = Student("Dhan","Basu")
+def find_student(students, first_name, last_name):
+  for student in students:
+    if student.first_name == first_name and student.last_name == last_name:
+      return student
+  return None
 
-#Add Courses
-C_Math = Course("Math")
-C_1035 = Course("CSCE1035")
-C_1015 = Course("CSCE1015")
+def find_faculty(faculties, first_name, last_name):
+  for faculty in faculties:
+    if faculty.first_name == first_name and faculty.last_name == last_name:
+      return faculty
+  return None
 
-#Add Faculty
-F_Aashish = Faculty("aashish", "Pandey")
-F_Arup = Faculty("arup", "datta")
-F_Liu = Faculty("Liu", "xianog")
+def find_course(courses, course_name):
+  for course in courses:
+    if course.name == course_name:
+      return course
+  return None
 
-#Enroll students to course
-S_Sushil.enroll(C_Math)
-S_Dhan.enroll(C_1015)
-S_Sushil.enroll(C_1035)
+# Menu-driven flow (predefined actions so it can run in browser without console input)
+university = University_System([], [], [])
+menu_actions = [
+  ("1", ("Sushil", "Gautam")),
+  ("1", ("Dhan", "Basu")),
+  ("2", "Math"),
+  ("2", "CSCE1035"),
+  ("2", "CSCE1015"),
+  ("3", ("aashish", "Pandey")),
+  ("3", ("arup", "datta")),
+  ("3", ("Liu", "xianog")),
+  ("4", ("Sushil", "Gautam", "Math")),
+  ("4", ("Dhan", "Basu", "CSCE1015")),
+  ("4", ("Sushil", "Gautam", "CSCE1035")),
+  ("5", ("aashish", "Pandey", "CSCE1035")),
+  ("5", ("arup", "datta", "CSCE1015")),
+  ("5", ("Liu", "xianog", "Math")),
+  ("6", None),
+]
 
-#Assign course to faculty
-F_Aashish.assign_course(C_1035)
-F_Arup.assign_course(C_1015)
-F_Liu.assign_course(C_Math)
+for choice, payload in menu_actions:
+  show_menu()
+  print(f"Selected option: {choice}")
 
-#make list of all students, faculty, and courses
-all_Students = [S_Sushil, S_Dhan]
-all_Faculty = [F_Aashish, F_Arup, F_Liu]
-all_Courses = [C_Math, C_1035, C_1015]
-
-#make university with University_System and assign new list
-university = University_System(all_Students, all_Faculty, all_Courses)
-
-#save student data to students.csv
-university.save_students_to_csv()
+  if choice == "1":
+    first_name, last_name = payload
+    university.add_student(Student(first_name, last_name))
+  elif choice == "2":
+    university.add_course(Course(payload))
+  elif choice == "3":
+    first_name, last_name = payload
+    university.add_faculty(Faculty(first_name, last_name))
+  elif choice == "4":
+    first_name, last_name, course_name = payload
+    student = find_student(university.students, first_name, last_name)
+    course = find_course(university.courses, course_name)
+    if student and course:
+      student.enroll(course)
+  elif choice == "5":
+    first_name, last_name, course_name = payload
+    faculty = find_faculty(university.faculties, first_name, last_name)
+    course = find_course(university.courses, course_name)
+    if faculty and course:
+      faculty.assign_course(course)
+  elif choice == "6":
+    university.save_students_to_csv()
+    print("Data saved to students.csv")
+    break
             </script>
 
             <script>
