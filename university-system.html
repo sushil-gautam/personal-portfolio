@@ -50,9 +50,9 @@
 
     <main style="padding-top: 50px;">
         <div class="section-header fade-in" style="opacity: 1; transform: none;">
-            <h2>University <span class="gradient-text">System</span> Monitor</h2>
+            <h2>University <span class="gradient-text">System</span> Terminal</h2>
             <p style="color: #4facfe; margin-top: 10px; font-weight: bold;" id="status-indicator">
-                Booting Pyodide Virtual Filesystem...
+                Connecting...
             </p>
         </div>
 
@@ -70,147 +70,75 @@
                 <span id="terminal-output"></span>
             </div>
             
-            <!-- RAW UNMODIFIED PYTHON FILES -->
-            <script type="text/python" id="course.py">
-#Sushil Gautam
-#Student ID: 11844192
-
-#define class Course with attributes name, and faculty
-class Course:
-  def __init__(self, name):
-    self.name = name
-    self.faculty = None
-
-#define methods get_info() which returns dictionary with the course name and assigned faculty name
-  def get_info(self):
-    return {"course_name": self.name, "faculty_name": f"{self.faculty.first_name} {self.faculty.last_name}" if self.faculty else "None"}
-            </script>
-
-            <script type="text/python" id="faculty.py">
-#Sushil Gautam
-#Student ID: 11844192
-
-#define class Faculty with atrributes first_name, last_name, and courses
-class Faculty:
-  def __init__(self, first_name, last_name):
-    self.first_name = first_name
-    self.last_name = last_name
-    self.courses = []  #this is list of course objects
-
-#define methods assign_course(course) to assign course to faculty member
-  def assign_course(self, course):
-    if course not in self.courses:
-      self.courses.append(course)
-      course.faculty = self
-            </script>
-
-            <script type="text/python" id="student.py">
-#Sushil Gautam
-#Student ID: 11844192
-
-#define class student with attributes first_name, last_name, and courses
-class Student:
-  def __init__(self, first_name, last_name):
-    self.first_name = first_name
-    self.last_name = last_name
-    self.courses = []  #this is list of course objects
-
-#define methods for class Student, enroll(course) to add course if not in list
-  def enroll(self, course):
-    if course not in self.courses:
-      self.courses.append(course)
-
-#define methods get_info, that returns student name and enrolled courses
-  def get_info(self):
-    return [f"{self.first_name} {self.last_name}", ", ".join([course.name for course in self.courses])]
-            </script>
-
-            <script type="text/python" id="university_system.py">
-#Sushil Gautam
-#Student ID: 11844192
-
-
-#import csv
-import csv
-
-#define class University with attributes students, faculties and courses
-class University_System:
-  def __init__(self, students, faculties, courses):
-    self.students = students
-    self.faculties = faculties
-    self.courses = courses
-
-#define methods add_students(first_name, last_name) to add students
-  def add_student(self, student):
-    if student not in self.students:
-      self.students.append(student)
-      return student
-
-#define methods add_faculty(first_name, last_name) that adds faculty object to faculties
-  def add_faculty(self, faculty):
-    if faculty not in self.faculties:
-      self.faculties.append(faculty)
-      return faculty
-
-#define methods add_course(course_name) that adds course object to courses
-  def add_course(self, course):
-    if course not in self.courses:
-      self.courses.append(course)
-      return course
-
-#define save to csv to save each students name and enrolled course to a csv file
-  def save_students_to_csv(self, filename="students.csv"):
-    with open(filename, "w") as file:
-      writer = csv.writer(file)
-      writer.writerow(["Name", "Enrolled Courses"])
-      for student in self.students:
-        writer.writerow(student.get_info())
-            </script>
-
             <script type="text/python" id="main.py">
 #Sushil Gautam
 #Student ID: 11844192
 
-#import university_system, student, faculty, and course
-from university_system import University_System
-from student import Student
-from faculty import Faculty
-from course import Course
+class BankAccount:
+  def __init__(self, owner, balance=0):
+    self.owner = owner
+    self.balance = balance
+    self.transactions = []
 
-#Add students
-S_Sushil = Student("Sushil","Gautam")
-S_Dhan = Student("Dhan","Basu")
+  def deposit(self, amount):
+    if amount > 0:
+      self.balance += amount
+      self.transactions.append(f"Deposit: ${amount}")
+      print(f"Deposited ${amount}. New balance: ${self.balance}")
 
-#Add Courses
-C_Math = Course("Math")
-C_1035 = Course("CSCE1035")
-C_1015 = Course("CSCE1015")
+  def withdraw(self, amount):
+    if amount <= self.balance:
+      self.balance -= amount
+      self.transactions.append(f"Withdraw: ${amount}")
+      print(f"Withdrew ${amount}. New balance: ${self.balance}")
+    else:
+      print("Insufficient balance.")
 
-#Add Faculty
-F_Aashish = Faculty("aashish", "Pandey")
-F_Arup = Faculty("arup", "datta")
-F_Liu = Faculty("Liu", "xianog")
+  def check_balance(self):
+    print(f"Current balance: ${self.balance}")
 
-#Enroll students to course
-S_Sushil.enroll(C_Math)
-S_Dhan.enroll(C_1015)
-S_Sushil.enroll(C_1035)
+  def mini_statement(self):
+    print("Recent transactions:")
+    if not self.transactions:
+      print("No transactions yet.")
+      return
+    for item in self.transactions:
+      print(item)
 
-#Assign course to faculty
-F_Aashish.assign_course(C_1035)
-F_Arup.assign_course(C_1015)
-F_Liu.assign_course(C_Math)
 
-#make list of all students, faculty, and courses
-all_Students = [S_Sushil, S_Dhan]
-all_Faculty = [F_Aashish, F_Arup, F_Liu]
-all_Courses = [C_Math, C_1035, C_1015]
+def show_menu():
+  print("===== SIMPLE BANKING SYSTEM =====")
+  print("1. Deposit")
+  print("2. Withdraw")
+  print("3. Check Balance")
+  print("4. Mini Statement")
+  print("5. Exit")
 
-#make university with University_System and assign new list
-university = University_System(all_Students, all_Faculty, all_Courses)
 
-#save student data to students.csv
-university.save_students_to_csv()
+account = BankAccount("Sushil", 1000)
+menu_actions = [
+  ("3", None),
+  ("1", 250),
+  ("2", 100),
+  ("4", None),
+  ("5", None),
+]
+
+for choice, value in menu_actions:
+  show_menu()
+  print(f"Select option: {choice}")
+  if choice == "1":
+    account.deposit(value)
+  elif choice == "2":
+    account.withdraw(value)
+  elif choice == "3":
+    account.check_balance()
+  elif choice == "4":
+    account.mini_statement()
+  elif choice == "5":
+    print("Thank you for using Simple Banking System.")
+    break
+  print("")
             </script>
 
             <script>
@@ -225,41 +153,29 @@ university.save_students_to_csv()
                     try {
                         let pyodide = await loadPyodide();
                         
-                        // Extract codes exactly as the user wrote them
-                        let classCourse = document.getElementById("course.py").textContent;
-                        let classFaculty = document.getElementById("faculty.py").textContent;
-                        let classStudent = document.getElementById("student.py").textContent;
-                        let classUni = document.getElementById("university_system.py").textContent;
                         let sysMain = document.getElementById("main.py").textContent;
 
                         // Create the virtual file system explicitly
-                        pyodide.FS.writeFile("course.py", classCourse.trim());
-                        pyodide.FS.writeFile("faculty.py", classFaculty.trim());
-                        pyodide.FS.writeFile("student.py", classStudent.trim());
-                        pyodide.FS.writeFile("university_system.py", classUni.trim());
                         pyodide.FS.writeFile("main.py", sysMain.trim());
 
-                        statusIndicator.textContent = "Status: Executing main.py module...";
-                        
-                        printToConsole("> Executing your 'University System' framework...");
-                        
-                        // Execute the pure user main.py module
-                        await pyodide.runPythonAsync("import main");
-                        
-                        printToConsole(">> main.py executed cleanly with 0 errors!");
-                        printToConsole(">> Output object generated...");
-                        printToConsole("\n> Locating generated students.csv file in Virtual Memory...");
+                        statusIndicator.textContent = "Status: Running simple banking system...";
+                        let pythonConsoleOutput = "";
+                        pyodide.setStdout({
+                            batched: (text) => {
+                                pythonConsoleOutput += text;
+                            }
+                        });
+                        pyodide.setStderr({
+                            batched: (text) => {
+                                pythonConsoleOutput += text;
+                            }
+                        });
 
-                        // Display the generated CSV results
-                        let csvData = pyodide.FS.readFile("students.csv", { encoding: "utf8" });
+                        await pyodide.runPythonAsync("import main");
+
+                        printToConsole(pythonConsoleOutput.trim());
                         
-                        printToConsole(">> File located! Outputting contents:\n");
-                        printToConsole("=========================================");
-                        printToConsole(csvData);
-                        printToConsole("=========================================");
-                        printToConsole("\nStatus: Architecture Run Complete.");
-                        
-                        statusIndicator.textContent = "Online. Execution Successful.";
+                        statusIndicator.textContent = "Online. Banking session complete.";
                         statusIndicator.style.color = "#27c93f";
 
                     } catch (err) {
