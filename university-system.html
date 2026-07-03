@@ -70,75 +70,354 @@
                 <span id="terminal-output"></span>
             </div>
             
-            <script type="text/python" id="main.py">
+            <script type="text/python" id="course.py">
 #Sushil Gautam
 #Student ID: 11844192
 
-class BankAccount:
-  def __init__(self, owner, balance=0):
-    self.owner = owner
-    self.balance = balance
-    self.transactions = []
+class Course:
+    def __init__(self, name):
+        self.name = name
+        self.faculty = None
 
-  def deposit(self, amount):
-    if amount > 0:
-      self.balance += amount
-      self.transactions.append(f"Deposit: ${amount}")
-      print(f"Deposited ${amount}. New balance: ${self.balance}")
+    def get_info(self):
+        return {
+            "course_name": self.name,
+            "faculty_name": f"{self.faculty.first_name} {self.faculty.last_name}" if self.faculty else "None",
+        }
+            </script>
 
-  def withdraw(self, amount):
-    if amount <= self.balance:
-      self.balance -= amount
-      self.transactions.append(f"Withdraw: ${amount}")
-      print(f"Withdrew ${amount}. New balance: ${self.balance}")
+            <script type="text/python" id="faculty.py">
+#Sushil Gautam
+#Student ID: 11844192
+
+class Faculty:
+    def __init__(self, first_name, last_name):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.courses = []
+
+    def assign_course(self, course):
+        if course not in self.courses:
+            self.courses.append(course)
+            course.faculty = self
+            </script>
+
+            <script type="text/python" id="student.py">
+#Sushil Gautam
+#Student ID: 11844192
+
+class Student:
+    def __init__(self, first_name, last_name):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.courses = []
+
+    def enroll(self, course):
+        if course not in self.courses:
+            self.courses.append(course)
+
+    def get_info(self):
+        return [f"{self.first_name} {self.last_name}", ", ".join([course.name for course in self.courses])]
+            </script>
+
+            <script type="text/python" id="university_system.py">
+#Sushil Gautam
+#Student ID: 11844192
+
+import csv
+
+class University_System:
+    def __init__(self, students, faculties, courses):
+        self.students = students
+        self.faculties = faculties
+        self.courses = courses
+
+    def add_student(self, student):
+        if student not in self.students:
+            self.students.append(student)
+            return student
+
+    def add_faculty(self, faculty):
+        if faculty not in self.faculties:
+            self.faculties.append(faculty)
+            return faculty
+
+    def add_course(self, course):
+        if course not in self.courses:
+            self.courses.append(course)
+            return course
+
+    def save_students_to_csv(self, filename="students.csv"):
+        with open(filename, "w") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Name", "Enrolled Courses"])
+            for student in self.students:
+                writer.writerow(student.get_info())
+            </script>
+
+            <script type="text/python" id="main.py">
+# Sushil Gautam
+# Student ID: 11844192
+
+from university_system import University_System
+from student import Student
+from faculty import Faculty
+from course import Course
+import hashlib
+
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+def create_account():
+    print("Welcome to the University System!")
+    print("Please create your username and password below to use the system.")
+
+    username = input("Username: ")
+    password = input("Password: ")
+
+    hashed_password = hash_password(password)
+
+    print(f"Account created for {username}.")
+    return username, hashed_password
+
+
+def login(saved_username, saved_password):
+    print("\nLogin")
+
+    while True:
+        username = input("Username: ")
+        password = input("Password: ")
+
+        if username == saved_username and hash_password(password) == saved_password:
+            print("Login successful!")
+            return
+        else:
+            print("Incorrect username or password. Try again.\n")
+
+
+def find_student(students, first_name, last_name):
+    for student in students:
+        if student.first_name == first_name and student.last_name == last_name:
+            return student
+    return None
+
+
+def find_course(courses, course_name):
+    for course in courses:
+        if course.name == course_name:
+            return course
+    return None
+
+
+def find_faculty(faculties, first_name, last_name):
+    for faculty in faculties:
+        if faculty.first_name == first_name and faculty.last_name == last_name:
+            return faculty
+    return None
+
+
+def show_all_students(students):
+    print("\nAll Students:")
+    if not students:
+        print("No students saved.")
     else:
-      print("Insufficient balance.")
-
-  def check_balance(self):
-    print(f"Current balance: ${self.balance}")
-
-  def mini_statement(self):
-    print("Recent transactions:")
-    if not self.transactions:
-      print("No transactions yet.")
-      return
-    for item in self.transactions:
-      print(item)
+        for student in students:
+            print(student.get_info())
 
 
-def show_menu():
-  print("===== SIMPLE BANKING SYSTEM =====")
-  print("1. Deposit")
-  print("2. Withdraw")
-  print("3. Check Balance")
-  print("4. Mini Statement")
-  print("5. Exit")
+def show_all_faculty(faculties):
+    print("\nAll Faculty:")
+    if not faculties:
+        print("No faculty saved.")
+    else:
+        for faculty in faculties:
+            print(f"{faculty.first_name} {faculty.last_name}")
 
 
-account = BankAccount("Sushil", 1000)
-menu_actions = [
-  ("3", None),
-  ("1", 250),
-  ("2", 100),
-  ("4", None),
-  ("5", None),
-]
+def show_all_courses(courses):
+    print("\nAll Courses:")
+    if not courses:
+        print("No courses saved.")
+    else:
+        for course in courses:
+            print(course.get_info())
 
-for choice, value in menu_actions:
-  show_menu()
-  print(f"Select option: {choice}")
-  if choice == "1":
-    account.deposit(value)
-  elif choice == "2":
-    account.withdraw(value)
-  elif choice == "3":
-    account.check_balance()
-  elif choice == "4":
-    account.mini_statement()
-  elif choice == "5":
-    print("Thank you for using Simple Banking System.")
-    break
-  print("")
+
+def show_student_enrollments(students):
+    print("\nStudent Enrollment Data:")
+    if not students:
+        print("No students saved.")
+    else:
+        for student in students:
+            print(student.get_info())
+
+
+def show_faculty_courses(faculties):
+    print("\nFaculty Course Assignments:")
+    if not faculties:
+        print("No faculty saved.")
+    else:
+        for faculty in faculties:
+            print(f"\nFaculty: {faculty.first_name} {faculty.last_name}")
+
+            if faculty.courses:
+                for course in faculty.courses:
+                    print(f"- {course.name}")
+            else:
+                print("No courses assigned.")
+
+
+def main():
+    students = []
+    faculties = []
+    courses = []
+
+    university = University_System(students, faculties, courses)
+
+    saved_username, saved_password = create_account()
+    login(saved_username, saved_password)
+
+    while True:
+        print("\nUniversity System Menu")
+        print("1. Add Student / Faculty / Course")
+        print("2. View or Enroll Courses")
+        print("3. View Students / Faculty / Courses")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            print("\nAdd Menu")
+            print("1. Add Student")
+            print("2. Add Faculty")
+            print("3. Add Course")
+            print("4. Back to Main Menu")
+
+            add_choice = input("Enter your choice: ")
+
+            if add_choice == "1":
+                first_name = input("Student first name: ")
+                last_name = input("Student last name: ")
+
+                student = Student(first_name, last_name)
+                university.add_student(student)
+                university.save_students_to_csv()
+
+                print("Student added successfully.")
+
+            elif add_choice == "2":
+                first_name = input("Faculty first name: ")
+                last_name = input("Faculty last name: ")
+
+                faculty = Faculty(first_name, last_name)
+                university.add_faculty(faculty)
+                university.save_students_to_csv()
+
+                print("Faculty added successfully.")
+
+            elif add_choice == "3":
+                course_name = input("Course name: ")
+
+                course = Course(course_name)
+                university.add_course(course)
+                university.save_students_to_csv()
+
+                print("Course added successfully.")
+
+            elif add_choice == "4":
+                continue
+
+            else:
+                print("Invalid choice.")
+
+        elif choice == "2":
+            print("\nView or Enroll Courses Menu")
+            print("1. Enroll Student in Course")
+            print("2. Assign Course to Faculty")
+            print("3. View Student Enrollment Data")
+            print("4. View Faculty Course Assignments")
+            print("5. Back to Main Menu")
+
+            course_choice = input("Enter your choice: ")
+
+            if course_choice == "1":
+                student_first = input("Student first name: ")
+                student_last = input("Student last name: ")
+                course_name = input("Course name: ")
+
+                student = find_student(students, student_first, student_last)
+                course = find_course(courses, course_name)
+
+                if student and course:
+                    student.enroll(course)
+                    university.save_students_to_csv()
+                    print("Student enrolled in course successfully.")
+                else:
+                    print("Student or course not found.")
+
+            elif course_choice == "2":
+                faculty_first = input("Faculty first name: ")
+                faculty_last = input("Faculty last name: ")
+                course_name = input("Course name: ")
+
+                faculty = find_faculty(faculties, faculty_first, faculty_last)
+                course = find_course(courses, course_name)
+
+                if faculty and course:
+                    faculty.assign_course(course)
+                    university.save_students_to_csv()
+                    print("Course assigned to faculty successfully.")
+                else:
+                    print("Faculty or course not found.")
+
+            elif course_choice == "3":
+                show_student_enrollments(students)
+
+            elif course_choice == "4":
+                show_faculty_courses(faculties)
+
+            elif course_choice == "5":
+                continue
+
+            else:
+                print("Invalid choice.")
+
+        elif choice == "3":
+            print("\nView Data Menu")
+            print("1. View All Students")
+            print("2. View All Faculty")
+            print("3. View All Courses")
+            print("4. Back to Main Menu")
+
+            view_choice = input("Enter your choice: ")
+
+            if view_choice == "1":
+                show_all_students(students)
+
+            elif view_choice == "2":
+                show_all_faculty(faculties)
+
+            elif view_choice == "3":
+                show_all_courses(courses)
+
+            elif view_choice == "4":
+                continue
+
+            else:
+                print("Invalid choice.")
+
+        elif choice == "4":
+            university.save_students_to_csv()
+            print("Thank you for using the University System.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+
+main()
             </script>
 
             <script>
@@ -153,12 +432,20 @@ for choice, value in menu_actions:
                     try {
                         let pyodide = await loadPyodide();
                         
+                        let classCourse = document.getElementById("course.py").textContent;
+                        let classFaculty = document.getElementById("faculty.py").textContent;
+                        let classStudent = document.getElementById("student.py").textContent;
+                        let classUni = document.getElementById("university_system.py").textContent;
                         let sysMain = document.getElementById("main.py").textContent;
 
                         // Create the virtual file system explicitly
+                        pyodide.FS.writeFile("course.py", classCourse.trim());
+                        pyodide.FS.writeFile("faculty.py", classFaculty.trim());
+                        pyodide.FS.writeFile("student.py", classStudent.trim());
+                        pyodide.FS.writeFile("university_system.py", classUni.trim());
                         pyodide.FS.writeFile("main.py", sysMain.trim());
 
-                        statusIndicator.textContent = "Status: Running simple banking system...";
+                        statusIndicator.textContent = "Status: Running University System...";
                         let pythonConsoleOutput = "";
                         pyodide.setStdout({
                             batched: (text) => {
@@ -170,12 +457,19 @@ for choice, value in menu_actions:
                                 pythonConsoleOutput += text;
                             }
                         });
+                        pyodide.setStdin({
+                            stdin: () => {
+                                const inputValue = window.prompt("University System Input") ?? "";
+                                pythonConsoleOutput += inputValue + "\n";
+                                return inputValue + "\n";
+                            }
+                        });
 
                         await pyodide.runPythonAsync("import main");
 
                         printToConsole(pythonConsoleOutput.trim());
                         
-                        statusIndicator.textContent = "Online. Banking session complete.";
+                        statusIndicator.textContent = "Online. University session complete.";
                         statusIndicator.style.color = "#27c93f";
 
                     } catch (err) {
